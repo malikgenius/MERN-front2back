@@ -1,22 +1,23 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const mongoose = require("mongoose");
-const passport = require("passport");
-const Joi = require("joi");
-const ProfileValidation = require("./ProfileValidation-Joi");
-const ExperienceValidation = require("./experienceValidation-joi");
-const EducationValidation = require("./EducationValidation-joi");
+const mongoose = require('mongoose');
+const passport = require('passport');
+const Joi = require('joi');
+const ProfileValidation = require('./ProfileValidation-Joi');
+const ExperienceValidation = require('./experienceValidation-joi');
+const EducationValidation = require('./EducationValidation-joi');
+// twilio credentials
+const twilioAccountSid = require('../../config/Keys').twilioAccountSid;
+const twilioAuthToken = require('../../config/Keys').twilioAuthToken;
 
 // Load Profile Model
-const Profile = require("../../model/Profile");
-const User = require("../../model/User");
+const Profile = require('../../model/Profile');
+const User = require('../../model/User');
 //SMS To User Phone
-router.post("/sms", (req, res) => {
-  const accountSid = "ACee445774dc3949bcc2d5efee8e2ca70f";
-  const authToken = "4b87e6a635aea42b6c66a10333e554f3";
-  const client = require("twilio")(accountSid, authToken);
+router.post('/sms', (req, res) => {
+  const client = require('twilio')(twilioAccountSid, twilioAuthToken);
   const opts = {};
-  opts.body = "This is my test sms from twilio";
+  opts.body = 'This is my test sms from twilio';
   opts.from = +18592096950;
   opts.to = req.body.phone;
   client.messages
@@ -32,17 +33,17 @@ router.post("/sms", (req, res) => {
 // Get Current User Profile
 // @Private Route
 router.get(
-  "/",
-  passport.authenticate("jwt", { session: false }),
+  '/',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     Profile.findOne({
       user: req.user.id
     })
       // populate user info from user model and add it into response in profile fetch.
-      .populate("user", ["name", "email"])
+      .populate('user', ['name', 'email'])
       .then(profile => {
         if (!profile) {
-          res.status(404).json({ Error: "Profile Not Found!" });
+          res.status(404).json({ Error: 'Profile Not Found!' });
         }
         res.json(profile);
       })
@@ -55,8 +56,8 @@ router.get(
 // @desc Create or Update user profile
 // @Private Route
 router.post(
-  "/",
-  passport.authenticate("jwt", { session: false }),
+  '/',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     // Joi Validation Seperate File ProfileValidation-Joi Export ProfileValidation and provide args req.body, res
     ProfileValidation(req.body, res);
@@ -80,8 +81,8 @@ router.post(
     if (req.body.githubusername)
       profileFields.githubusername = req.body.githubusername;
     // Skills - Split into array
-    if (typeof req.body.skills !== "undefined") {
-      profileFields.skills = req.body.skills.split(",");
+    if (typeof req.body.skills !== 'undefined') {
+      profileFields.skills = req.body.skills.split(',');
     }
     // Social
     profileFields.social = {};
@@ -105,7 +106,7 @@ router.post(
         // Check if the handle exists  for SEO
         Profile.findOne({ handle: profileFields.handle }).then(profile => {
           if (profile) {
-            res.status(400).json("Handle Exists");
+            res.status(400).json('Handle Exists');
           }
           // Save Profile
           new Profile(profileFields).save().then(profile => {
@@ -119,13 +120,13 @@ router.post(
 
 // Add Experience to profile
 router.post(
-  "/experience",
-  passport.authenticate("jwt", { session: false }),
+  '/experience',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     ExperienceValidation(req.body, res);
     Profile.findOne({ user: req.user.id }).then(profile => {
       if (!profile) {
-        return res.json({ Error: "No Profile Associated" });
+        return res.json({ Error: 'No Profile Associated' });
       }
       const newExp = {
         title: req.body.title,
@@ -145,8 +146,8 @@ router.post(
 
 // Delete Experience from Profile by exp_id
 router.delete(
-  "/experience/:exp_id",
-  passport.authenticate("jwt", { session: false }),
+  '/experience/:exp_id',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     Profile.findOne(
       { user: req.user.id }
@@ -173,13 +174,13 @@ router.delete(
 
 // Add Education to profile
 router.post(
-  "/education",
-  passport.authenticate("jwt", { session: false }),
+  '/education',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     EducationValidation(req.body, res);
     Profile.findOne({ user: req.user.id }).then(profile => {
       if (!profile) {
-        return res.json({ Error: "No Profile Associated" });
+        return res.json({ Error: 'No Profile Associated' });
       }
       const newEdu = {
         school: req.body.school,
@@ -199,12 +200,12 @@ router.post(
 
 // Delete Education
 router.delete(
-  "/education/:edu_id",
-  passport.authenticate("jwt", { session: false }),
+  '/education/:edu_id',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id }).then(profile => {
       if (!profile) {
-        return res.json({ Error: "No Profile Associated with user" });
+        return res.json({ Error: 'No Profile Associated with user' });
       }
       const removeIndex = profile.education
         .map(item => item.id)
@@ -224,13 +225,13 @@ router.delete(
 
 // Delete Profile and User
 router.delete(
-  "/",
-  passport.authenticate("jwt", { session: false }),
+  '/',
+  passport.authenticate('jwt', { session: false }),
   (req, res) => {
     // if we only want to delete the profile we can stop after below linke and after .then(() => res.json(bla bla bla ))
     Profile.findOneAndRemove({ user: req.user.id }).then(() => {
       User.findOneAndRemove({ _id: req.user.id }).then(() =>
-        res.json({ ProfileRemoved: "Sad to See you Going" })
+        res.json({ ProfileRemoved: 'Sad to See you Going' })
       );
     });
   }

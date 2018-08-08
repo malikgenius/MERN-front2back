@@ -1,11 +1,11 @@
 //node scheduler to send sms...
-const schedule = require("node-schedule");
-const Profile = require("../model/Profile");
-const User = require("../model/User");
-const moment = require("moment");
-const accountSid = "ACee445774dc3949bcc2d5efee8e2ca70f";
-const authToken = "4b87e6a635aea42b6c66a10333e554f3";
-const client = require("twilio")(accountSid, authToken);
+const schedule = require('node-schedule');
+const Profile = require('../model/Profile');
+const User = require('../model/User');
+const moment = require('moment');
+const twilioAccountSid = require('../config/Keys').twilioAccountSid;
+const twilioAuthToken = require('../config/Keys').twilioAuthToken;
+const client = require('twilio')(twilioAccountSid, twilioAuthToken);
 
 /*
 *    *    *    *    *    *
@@ -19,15 +19,15 @@ const client = require("twilio")(accountSid, authToken);
 └───────────────────────── second (0 - 59, OPTIONAL)
 */
 
-module.exports = schedule.scheduleJob("* * 23 * *", () => {
+module.exports = schedule.scheduleJob('* * 23 * *', () => {
   // get current date and then change it into unix date. to compare with saved date in DB.
-  const currentDate = moment(new Date()).format("MM/DD/YYYY");
+  const currentDate = moment(new Date()).format('MM/DD/YYYY');
   const unixTime = parseInt(
     (new Date(currentDate).getTime() / 1000).toFixed(0)
   );
 
   Profile.find({ birthday: unixTime })
-    .populate("user", ["phone", "email", "name"])
+    .populate('user', ['phone', 'email', 'name'])
     .then(profile => {
       if (profile) {
         profile.forEach(single => {
@@ -49,9 +49,9 @@ module.exports = schedule.scheduleJob("* * 23 * *", () => {
             // .then(res.send(message))
             .done();
         });
-        return console.log("Messag Sent");
+        return console.log('Messag Sent');
       } else {
-        return console.log("Couldnt find any current");
+        return console.log('Couldnt find any current');
       }
     });
 });

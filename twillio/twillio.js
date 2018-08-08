@@ -1,12 +1,12 @@
-// Number : +18592096950
+const twilioAccountSid = require('../config/Keys').twilioAccountSid;
+const twilioAuthToken = require('../config/Keys').twilioAuthToken;
 
 // Download the helper library from https://www.twilio.com/docs/node/install
 // Your Account Sid and Auth Token from twilio.com/console
-const accountSid = "ACee445774dc3949bcc2d5efee8e2ca70f";
-const authToken = "4b87e6a635aea42b6c66a10333e554f3";
-const client = require("twilio")(accountSid, authToken);
+
+const client = require('twilio')(twilioAccountSid, twilioAuthToken);
 const opts = {};
-opts.body = "This is my test sms from twilio";
+opts.body = 'This is my test sms from twilio';
 opts.from = +15017122661;
 opts.to = req.body.phone;
 client.messages
