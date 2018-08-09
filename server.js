@@ -8,7 +8,7 @@ require('./auth/mongodb/mongodb');
 // web-push for push notifications
 
 //Routes
-const subscribe = require('./routes/api/subscribe');
+const push = require('./routes/api/pushnotification');
 const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
 const notification = require('./routes/api/notification');
@@ -49,7 +49,7 @@ app.use(function(req, res, next) {
 });
 
 // Routes
-app.use('/api/push', subscribe);
+app.use('/api/push', push);
 app.use('/api/users', users);
 app.use('/api/profile', profile);
 app.use('/api/notification', notification);
