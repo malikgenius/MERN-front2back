@@ -6,5 +6,6 @@ self.addEventListener('push', ev => {
   self.registration.showNotification(data.title, {
     body: data.body,
     icon: 'zeenahlogo.jpg'
+    // tag: 'Push-notification from ZEENAHLIST'
   });
 });
