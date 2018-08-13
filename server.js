@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const passport = require('passport');
 const fs = require('fs');
+const path = require('path');
 require('./auth/mongodb/mongodb');
 // web-push for push notifications
 
@@ -55,6 +56,15 @@ app.use('/api/profile', profile);
 app.use('/api/notification', notification);
 app.use('/api/posts', posts);
 app.use('/api/comments', comments);
+
+// Server static assets if in production
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 // Schedule to send emails and SMS to users on specific date.
 require('./notifications/email-scheduler');

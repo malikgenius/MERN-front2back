@@ -5,7 +5,7 @@ const passport = require('passport');
 const Joi = require('joi');
 const ProfileValidation = require('./ProfileValidation-Joi');
 const ExperienceValidation = require('./experienceValidation-joi');
-const EducationValidation = require('./EducationValidation-joi');
+const EducationValidation = require('./educationValidation-joi');
 // twilio credentials
 const twilioAccountSid = require('../../config/Keys').twilioAccountSid;
 const twilioAuthToken = require('../../config/Keys').twilioAuthToken;
