@@ -1,13 +1,17 @@
-const mongoose = require("mongoose");
-const mongoAuth = require("../../config/Keys").mongoAuth;
-const Grid = require("gridfs-stream");
+const mongoose = require('mongoose');
+const mongoAuth = require('../../config/Keys').mongoAuth;
+const mongoMERNFRONT2BACK = require('../../config/Keys').mongoMERNFRONT2BACK;
+const Grid = require('gridfs-stream');
 mongoose.Promise = global.Promise;
 
 // Simple mongoose.connect to only open single connection to db.
 mongoose
-  .connect(mongoAuth)
+  .connect(
+    mongoMERNFRONT2BACK,
+    { useNewUrlParser: true }
+  )
   .then(err => {
-    console.log("Local MongoDB Connected Auth DB!");
+    console.log('mLab MongoDB Connected MERNFRONT2BACK DB!');
   })
   .catch(err => {
     console.log(`Error: Connecting MongoDB ${err}`);

@@ -48,30 +48,42 @@ router.post('/subscribe', (req, res) => {
   const subscription = req.body;
   console.log(req.body);
   res.status(201).json({});
+
+  const payload = JSON.stringify({
+    title: `Wishing `,
+    body: `Happy Birthday , have a Great Year Ahead!`
+  });
+  console.log(subscription);
+  webpush.sendNotification(subscription, payload).catch(error => {
+    console.error(error.stack);
+  });
+
   // here we can send whatever we want to push notification ... even we can trigger it on event. will figure it out how to .. but data we can send
   // like if someone posted a new story, or somebody`s birthday today.
   // have to figure out how to convert unixdate and match it with today...
-  Profile.find({ birthday: currentDate })
-    .populate('user', ['email', 'name'])
-    .then(profile => {
-      if (profile) {
-        profile.forEach(single => {
-          console.log(single);
-          const userObj = single.user;
-          const email = userObj.email;
-          const userName = userObj.name;
 
-          const payload = JSON.stringify({
-            title: `Wishing ${userName}`,
-            body: `Happy Birthday ${userName}, have a Great Year Ahead!`
-          });
-          console.log(subscription);
-          webpush.sendNotification(subscription, payload).catch(error => {
-            console.error(error.stack);
-          });
-        });
-      }
-    });
+  // Profile.find({ birthday: currentDate })
+  //   .populate('user', ['email', 'name'])
+  //   .then(profile => {
+  //     if (profile) {
+  //       profile.forEach(single => {
+  //         console.log(single);
+  //         const userObj = single.user;
+  //         const email = userObj.email;
+  //         const userName = userObj.name;
+
+  //         const payload = JSON.stringify({
+  //           title: `Wishing ${userName}`,
+  //           body: `Happy Birthday ${userName}, have a Great Year Ahead!`
+  //         });
+  //         console.log(subscription);
+  //         webpush.sendNotification(subscription, payload).catch(error => {
+  //           console.error(error.stack);
+  //         });
+  //       });
+  //     }
+
+  //   });
 });
 
 module.exports = router;
